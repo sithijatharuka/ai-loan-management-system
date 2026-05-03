@@ -1,12 +1,14 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router";
 import { LayoutDashboard, Users, DollarSign, LogOut } from 'lucide-react';
+import { removeAccessToken } from '../lib/api';
 
 export function RootLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    removeAccessToken();
+    localStorage.removeItem('username');
     navigate('/login');
   };
 

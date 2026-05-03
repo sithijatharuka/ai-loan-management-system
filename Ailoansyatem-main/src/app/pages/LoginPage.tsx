@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Lock, User } from 'lucide-react';
+import { login, saveAccessToken } from '../lib/api';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -8,15 +9,17 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    if (username === 'admin' && password === 'admin123') {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('username', username);
+    try {
+      const response = await login(username, password);
+      saveAccessToken(response.token);
+      localStorage.setItem('username', response.user.username);
       navigate('/');
-    } else {
-      setError('Invalid username or password');
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : 'Login failed');
     }
   };
 

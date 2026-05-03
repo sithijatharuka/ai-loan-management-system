@@ -1,8 +1,10 @@
 import express from 'express';
 import Transaction from '../models/transaction.js';
 import Customer from '../models/customer.js';
+import authMiddleware from './authMiddleware.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   const filter = {};

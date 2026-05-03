@@ -1,8 +1,10 @@
 import express from 'express';
 import Customer from '../models/customer.js';
 import Transaction from '../models/transaction.js';
+import authMiddleware from './authMiddleware.js';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 function calculateMonthlySettlement(amount, annualRate, months) {
   const monthlyRate = annualRate / 100 / 12;

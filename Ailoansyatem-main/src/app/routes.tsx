@@ -9,7 +9,7 @@ import { CollectionPage } from "./pages/CollectionPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 const isAuthenticated = () => {
-  return localStorage.getItem('isAuthenticated') === 'true';
+  return !!localStorage.getItem('accessToken');
 };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

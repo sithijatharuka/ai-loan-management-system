@@ -168,11 +168,11 @@ export function AddCustomerModal({ onClose, onSuccess }: AddCustomerModalProps) 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-blue-700">Total Amount (with interest)</p>
-                  <p className="text-lg font-semibold text-blue-900">${totalAmount.toFixed(2)}</p>
+                  <p className="text-lg font-semibold text-blue-900">Rs {totalAmount.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-blue-700">Monthly Settlement</p>
-                  <p className="text-lg font-semibold text-blue-900">${monthlySettlement.toFixed(2)}</p>
+                  <p className="text-lg font-semibold text-blue-900">Rs {monthlySettlement.toFixed(2)}</p>
                 </div>
               </div>
             </div>

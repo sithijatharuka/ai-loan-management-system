@@ -3,32 +3,34 @@ import { useParams, Link } from 'react-router';
 import { ArrowLeft, User, Phone, MapPin, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 import { getCustomer, getTransactions } from '../lib/api';
 import { Customer, Transaction } from '../types';
+import { AddPaymentModal } from '../components/AddPaymentModal';
 
 export function CustomerDetailPage() {
   const { id } = useParams();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  useEffect(() => {
+  const loadCustomerDetail = async () => {
     if (!id) {
       return;
     }
 
-    async function loadCustomerDetail() {
-      try {
-        const [foundCustomer, customerTransactions] = await Promise.all([
-          getCustomer(id),
-          getTransactions(id),
-        ]);
+    try {
+      const [foundCustomer, customerTransactions] = await Promise.all([
+        getCustomer(id),
+        getTransactions(id),
+      ]);
 
-        setCustomer(foundCustomer);
-        setTransactions(customerTransactions);
-      } catch (error) {
-        console.error('Failed to load customer details', error);
-        setCustomer(null);
-      }
+      setCustomer(foundCustomer);
+      setTransactions(customerTransactions);
+    } catch (error) {
+      console.error('Failed to load customer details', error);
+      setCustomer(null);
     }
+  };
 
+  useEffect(() => {
     loadCustomerDetail();
   }, [id]);
 
@@ -207,13 +209,13 @@ export function CustomerDetailPage() {
           <div>
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <Link
-                to="/collections"
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors mb-3"
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors mb-3"
               >
                 <DollarSign className="w-5 h-5" />
                 Add Payment
-              </Link>
+              </button>
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className={`px-4 py-3 rounded-lg ${
                   customer.status === 'active'
@@ -238,6 +240,18 @@ export function CustomerDetailPage() {
           </div>
         </div>
       </main>
+
+      {customer && isPaymentModalOpen && (
+        <AddPaymentModal
+          customerId={customer.id || ''}
+          remainingBalance={customer.remainingBalance}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onSuccess={() => {
+            setIsPaymentModalOpen(false);
+            loadCustomerDetail();
+          }}
+        />
+      )}
     </div>
   );
 }

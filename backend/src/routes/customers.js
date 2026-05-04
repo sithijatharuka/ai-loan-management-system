@@ -7,16 +7,18 @@ const router = express.Router();
 router.use(authMiddleware);
 
 function calculateMonthlySettlement(amount, annualRate, months) {
-  const monthlyRate = annualRate / 100 / 12;
-  if (!monthlyRate || months === 0) {
-    return amount / months;
-  }
-  return (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+  // Formula: Monthly payment = (Loan amount + Interest) / Duration
+  // Interest = (Loan Amount × Interest Rate × Duration) / (100 × 12)
+  const totalInterest = (amount * annualRate * months) / (100 * 12);
+  const totalAmount = amount + totalInterest;
+  return Number((totalAmount / months).toFixed(2));
 }
 
 function calculateTotalAmount(amount, annualRate, months) {
-  const monthly = calculateMonthlySettlement(amount, annualRate, months);
-  return Number((monthly * months).toFixed(2));
+  // Total Amount = Loan Amount + Interest
+  // Interest = (Loan Amount × Interest Rate × Duration) / (100 × 12)
+  const totalInterest = (amount * annualRate * months) / (100 * 12);
+  return Number((amount + totalInterest).toFixed(2));
 }
 
 router.get('/', async (req, res) => {

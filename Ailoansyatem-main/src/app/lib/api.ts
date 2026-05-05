@@ -89,3 +89,16 @@ export async function addPayment(payload: {
     }),
   );
 }
+
+export async function extendLoan(payload: {
+  customerId: string;
+  additionalAmount: number;
+}): Promise<Customer> {
+  return handleResponse(
+    await fetch(`${apiBaseUrl}/customers/${payload.customerId}/extend`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify({ additionalAmount: payload.additionalAmount }),
+    }),
+  );
+}

@@ -4,12 +4,14 @@ import { ArrowLeft, User, Phone, MapPin, DollarSign, Calendar, TrendingUp } from
 import { getCustomer, getTransactions } from '../lib/api';
 import { Customer, Transaction } from '../types';
 import { AddPaymentModal } from '../components/AddPaymentModal';
+import { ExtendLoanModal } from '../components/ExtendLoanModal';
 
 export function CustomerDetailPage() {
   const { id } = useParams();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isExtendModalOpen, setIsExtendModalOpen] = useState(false);
 
   const loadCustomerDetail = async () => {
     if (!id) {
@@ -48,7 +50,8 @@ export function CustomerDetailPage() {
   }
 
   const paidAmount = customer.totalAmount - customer.remainingBalance;
-  const paymentProgress = (paidAmount / customer.totalAmount) * 100;
+  const referenceAmount = customer.progressReferenceAmount ?? customer.totalAmount;
+  const paymentProgress = (paidAmount / referenceAmount) * 100;
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -216,6 +219,13 @@ export function CustomerDetailPage() {
                 <DollarSign className="w-5 h-5" />
                 Add Payment
               </button>
+              <button
+                onClick={() => setIsExtendModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors mb-3"
+              >
+                <TrendingUp className="w-5 h-5" />
+                Extend Loan
+              </button>
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className={`px-4 py-3 rounded-lg ${
                   customer.status === 'active'
@@ -248,6 +258,18 @@ export function CustomerDetailPage() {
           onClose={() => setIsPaymentModalOpen(false)}
           onSuccess={() => {
             setIsPaymentModalOpen(false);
+            loadCustomerDetail();
+          }}
+        />
+      )}
+
+      {customer && isExtendModalOpen && (
+        <ExtendLoanModal
+          customerId={customer.id || ''}
+          currentLoanAmount={customer.loanAmount}
+          onClose={() => setIsExtendModalOpen(false)}
+          onSuccess={() => {
+            setIsExtendModalOpen(false);
             loadCustomerDetail();
           }}
         />

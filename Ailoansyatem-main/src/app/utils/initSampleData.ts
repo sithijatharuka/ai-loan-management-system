@@ -8,7 +8,7 @@ export const initializeSampleData = () => {
     return;
   }
 
-  const sampleCustomers: Omit<Customer, 'id' | 'createdAt' | 'monthlySettlement' | 'totalAmount' | 'remainingBalance'>[] = [
+  const sampleCustomers: Omit<Customer, 'id' | 'createdAt' | 'monthlySettlement' | 'totalAmount' | 'remainingBalance' | 'progressReferenceAmount'>[] = [
     {
       name: 'John Miller',
       contact: '555-0101',
@@ -58,6 +58,7 @@ export const initializeSampleData = () => {
       monthlySettlement,
       totalAmount,
       remainingBalance: totalAmount,
+      progressReferenceAmount: totalAmount,
     };
 
     const loanTransaction: Transaction = {

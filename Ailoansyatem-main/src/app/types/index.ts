@@ -9,6 +9,7 @@ export interface Customer {
   monthlySettlement: number;
   totalAmount: number;
   remainingBalance: number;
+  progressReferenceAmount?: number;
   createdAt: string;
   status: 'active' | 'completed' | 'defaulted';
 }

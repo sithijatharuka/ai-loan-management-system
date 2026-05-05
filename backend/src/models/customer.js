@@ -11,6 +11,12 @@ const customerSchema = new mongoose.Schema(
     monthlySettlement: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     remainingBalance: { type: Number, required: true },
+    progressReferenceAmount: {
+      type: Number,
+      default: function () {
+        return this.totalAmount;
+      },
+    },
     createdAt: { type: String, default: () => new Date().toISOString() },
     status: {
       type: String,

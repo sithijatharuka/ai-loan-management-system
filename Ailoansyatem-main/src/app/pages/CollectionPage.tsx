@@ -78,7 +78,8 @@ export function CollectionPage() {
                 <tbody className="divide-y divide-gray-200">
                   {filteredCustomers.map((customer) => {
                     const paidAmount = customer.totalAmount - customer.remainingBalance;
-                    const paymentProgress = (paidAmount / customer.totalAmount) * 100;
+                    const referenceAmount = customer.progressReferenceAmount ?? customer.totalAmount;
+                    const paymentProgress = (paidAmount / referenceAmount) * 100;
                     return (
                       <tr key={customer.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">

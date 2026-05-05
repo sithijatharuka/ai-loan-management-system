@@ -56,6 +56,7 @@ router.post('/', async (req, res) => {
     monthlySettlement,
     totalAmount,
     remainingBalance: totalAmount,
+    progressReferenceAmount: totalAmount,
     status: 'active',
   });
 
@@ -90,6 +91,46 @@ router.put('/:id', async (req, res) => {
   if (!customer) {
     return res.status(404).json({ message: 'Customer not found' });
   }
+  res.json(customer);
+});
+
+router.put('/:id/extend', async (req, res) => {
+  const { additionalAmount } = req.body;
+
+  if (!additionalAmount || Number(additionalAmount) <= 0) {
+    return res.status(400).json({ message: 'Valid additional amount required' });
+  }
+
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    return res.status(404).json({ message: 'Customer not found' });
+  }
+
+  const oldTotalAmount = customer.totalAmount;
+  const oldRemainingBalance = customer.remainingBalance;
+  const amountPaid = oldTotalAmount - oldRemainingBalance;
+  const progressReferenceAmount = customer.progressReferenceAmount ?? oldTotalAmount;
+
+  customer.loanAmount += Number(additionalAmount);
+  customer.progressReferenceAmount = progressReferenceAmount;
+  customer.totalAmount = calculateTotalAmount(customer.loanAmount, customer.interestRate, customer.loanDuration);
+  customer.monthlySettlement = calculateMonthlySettlement(customer.loanAmount, customer.interestRate, customer.loanDuration);
+  customer.remainingBalance = customer.totalAmount - amountPaid;
+  customer.status = customer.remainingBalance === 0 ? 'completed' : 'active';
+
+  await customer.save();
+
+  const transaction = new Transaction({
+    customerId: customer.id,
+    customerName: customer.name,
+    amount: Number(additionalAmount),
+    type: 'loan',
+    balanceBefore: oldRemainingBalance,
+    balanceAfter: customer.remainingBalance,
+  });
+
+  await transaction.save();
+
   res.json(customer);
 });
 
